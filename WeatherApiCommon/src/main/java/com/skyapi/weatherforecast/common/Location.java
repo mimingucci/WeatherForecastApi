@@ -1,5 +1,7 @@
 package com.skyapi.weatherforecast.common;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -77,6 +79,24 @@ public class Location {
 	}
 	public void setTrashed(boolean trashed) {
 		this.trashed = trashed;
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(code);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Location other = (Location) obj;
+		return Objects.equals(code, other.code);
+	}
+	public Location() {
+		super();
 	}
     
 }

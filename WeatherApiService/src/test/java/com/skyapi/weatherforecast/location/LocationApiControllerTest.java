@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -138,4 +139,32 @@ public class LocationApiControllerTest {
 		       .andExpect(status().isNoContent())
 		       .andDo(print());
 	}
+
+	@Test
+	public void testValidateRequestBodyLocationCode() throws Exception {
+		Location location =new Location();
+		location.setCityName("New York City");
+		location.setCountryCode("US");
+		location.setCountryName("America");
+		location.setEnabled(true);
+		location.setRegionName("New York");
+		String locationAsString=mapper.writeValueAsString(location);
+		mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(locationAsString))
+				.andExpect(status().isBadRequest())
+				.andExpect((ResultMatcher) content().contentType("application/json"))
+				.andExpect(jsonPath("$.errors", is("Location code cannot be null")))
+				.andDo(print());
+	}
+
+	@Test
+	public void testValidateRequestBodyAllInvalid() throws Exception {
+		Location location=new Location();
+		String bodyContent=mapper.writeValueAsString(location);
+		mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
+				.andExpect(status().isBadRequest())
+				//.andExpect(content().contentType("application/json"))
+				.andDo(print());
+	}
+
+
 }

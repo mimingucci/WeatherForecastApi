@@ -30,7 +30,7 @@ public class LocationApiController {
 	}
 	
     @PostMapping
-    public ResponseEntity<Location> addLocation(@RequestBody Location location){
+    public ResponseEntity<Location> addLocation(@RequestBody @Valid Location location){
     	Location addedLocation=service.save(location);
     	if(addedLocation==null) {
     	   return ResponseEntity.badRequest().body(addedLocation);	

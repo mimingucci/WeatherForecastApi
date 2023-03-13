@@ -111,5 +111,13 @@ public class Location {
 	public Location() {
 		super();
 	}
-    
+
+	@Override
+	public String toString() {
+		return "Location{" +
+				"cityName='" + cityName + '\'' +
+				(regionName!=null ? ", regionName='" + regionName : "")+'\''+
+				", countryName='" + countryName + '\'' +
+				'}';
+	}
 }

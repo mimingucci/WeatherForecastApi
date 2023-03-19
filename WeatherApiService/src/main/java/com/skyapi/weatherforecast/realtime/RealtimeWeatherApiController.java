@@ -7,14 +7,12 @@ import com.skyapi.weatherforecast.common.Location;
 import com.skyapi.weatherforecast.common.RealtimeWeather;
 import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping( path = "/v1/realtime", produces = "application/json")
@@ -58,5 +56,18 @@ public class RealtimeWeatherApiController {
             LOGGER.error(e.getMessage(), e);
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/{locationCode}")
+    public ResponseEntity<?> updateRealtimeWeather(@PathVariable("locationCode") String locationCode, @RequestBody @Valid RealtimeWeather realtimeWeather) throws LocationNotFoundException {
+        realtimeWeather.setLocationCode(locationCode);
+        try {
+            RealtimeWeather updatedRealtimeWeather=realtimeWeatherService.update(locationCode, realtimeWeather);
+            RealtimeWeatherDTO dto=mapper.map(updatedRealtimeWeather, RealtimeWeatherDTO.class);
+            return ResponseEntity.ok(dto);
+        }catch (LocationNotFoundException e){
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }

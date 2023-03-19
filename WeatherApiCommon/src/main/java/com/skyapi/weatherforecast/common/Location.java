@@ -1,5 +1,7 @@
 package com.skyapi.weatherforecast.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,6 +45,9 @@ public class Location {
 	@OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	private RealtimeWeather realtimeWeather;
+
+	@OneToMany(mappedBy = "id.location")
+	private List<HourlyWeather> listHourlyWeather=new ArrayList<>();
 
 	public Location(String cityName, String regionName, String countryName, String countryCode) {
 		this.cityName = cityName;
@@ -120,4 +125,21 @@ public class Location {
 				", countryName='" + countryName + '\'' +
 				'}';
 	}
+
+	public RealtimeWeather getRealtimeWeather() {
+		return realtimeWeather;
+	}
+
+	public void setRealtimeWeather(RealtimeWeather realtimeWeather) {
+		this.realtimeWeather = realtimeWeather;
+	}
+
+	public List<HourlyWeather> getListHourlyWeather() {
+		return listHourlyWeather;
+	}
+
+	public void setListHourlyWeather(List<HourlyWeather> listHourlyWeather) {
+		this.listHourlyWeather = listHourlyWeather;
+	}
 }
+

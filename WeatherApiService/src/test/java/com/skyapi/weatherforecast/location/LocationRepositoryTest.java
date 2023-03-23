@@ -62,4 +62,20 @@ public class LocationRepositoryTest {
 		Location location=repo.findByCode("NYC_USA");
 		assertThat(location).isNull();
 	}
+
+	@Test
+	public void findByCountryCodeAndCityNameNotFound(){
+		String countryCode="HN";
+		String cityName="city";
+		Location location=repo.findByCountryCodeAndCityName(countryCode, cityName);
+		assertThat(location).isNull();
+	}
+
+	@Test
+	public void findByCountryCodeAndCityNameShouldBeFound(){
+		String countryCode="IN";
+		String cityName="Delhi";
+		Location location=repo.findByCountryCodeAndCityName(countryCode, cityName);
+		assertThat(location).isNotNull();
+	}
 }

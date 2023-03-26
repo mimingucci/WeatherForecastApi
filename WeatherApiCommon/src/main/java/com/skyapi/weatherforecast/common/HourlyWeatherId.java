@@ -13,6 +13,14 @@ public class HourlyWeatherId implements Serializable {
     @JoinColumn(name = "location_code")
     private Location location;
 
+    public HourlyWeatherId(int hourOfDay, Location location) {
+        this.hourOfDay = hourOfDay;
+        this.location = location;
+    }
+
+    public HourlyWeatherId() {
+    }
+
     public int getHourOfDay() {
         return hourOfDay;
     }

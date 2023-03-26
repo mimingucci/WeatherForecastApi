@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import com.skyapi.weatherforecast.common.HourlyWeather;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -26,12 +27,12 @@ public class LocationRepositoryTest {
 	@Test
 	public void addLocation() {
 		Location location=new Location();
-		location.setCode("NYC_USA");
-		location.setCityName("New York City");
-		location.setCountryCode("US");
-		location.setCountryName("America");
+		location.setCode("MBMH_IN");
+		location.setCityName("Mumbai");
+		location.setCountryCode("IN");
+		location.setCountryName("India");
 		location.setEnabled(true);
-		location.setRegionName("New York");
+		location.setRegionName("Maharashtra");
 		
 		Location addedLocation=repo.save(location);
 		assertThat(addedLocation).isNotNull();
@@ -78,4 +79,18 @@ public class LocationRepositoryTest {
 		Location location=repo.findByCountryCodeAndCityName(countryCode, cityName);
 		assertThat(location).isNotNull();
 	}
+
+	@Test
+	public void testAddHourlyWeatherData(){
+		Location location=repo.findById("MBMH_IN").get();
+		List<HourlyWeather> hourlyWeathers=location.getListHourlyWeather();
+		HourlyWeather forecast1=new HourlyWeather().id(location, 9)
+				.temperature(40)
+				.status("Sunny")
+				.precipitation(40);
+		hourlyWeathers.add(forecast1);
+		Location updatedLocation=repo.save(location);
+		assertThat(updatedLocation.getListHourlyWeather()).isNotEmpty();
+	}
+
 }

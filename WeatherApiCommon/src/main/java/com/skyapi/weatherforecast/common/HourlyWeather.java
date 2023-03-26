@@ -45,4 +45,36 @@ public class HourlyWeather {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public HourlyWeather temperature(int temp){
+        setTemperature(temp);
+        return this;
+    }
+
+    public HourlyWeather id(Location location, int hourOfDay){
+        this.id.setLocation(location);
+        this.id.setHourOfDay(hourOfDay);
+        return this;
+    }
+
+    public HourlyWeather status(String status){
+        setStatus(status);
+        return this;
+    }
+
+    public HourlyWeather precipitation(int precipitation){
+        this.setPrecipitation(precipitation);
+        return this;
+    }
+
+    public HourlyWeather location(Location location){
+        this.id.setLocation(location);
+        return this;
+    }
+
+    public HourlyWeather hourOfDay(int hour){
+        this.id.setHourOfDay(hour);
+        return this;
+    }
+
 }

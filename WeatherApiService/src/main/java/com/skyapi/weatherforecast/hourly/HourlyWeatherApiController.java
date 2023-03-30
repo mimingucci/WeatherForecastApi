@@ -8,11 +8,10 @@ import com.skyapi.weatherforecast.common.Location;
 import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -75,5 +74,14 @@ public class HourlyWeatherApiController {
         });
         return listDto;
     }
+
+    @PutMapping("/{locationCode}")
+    public ResponseEntity<?> updateHourlyForecast(@PathVariable("locationCode") String locationCode, @RequestBody List<HourlyWeatherDTO> listDTO){
+        if(listDTO.isEmpty()){
+            return new ResponseEntity<>("List hourly weather data can not be empty", HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.accepted().build();
+    }
+
 
 }

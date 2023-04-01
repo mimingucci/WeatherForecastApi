@@ -4,6 +4,8 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "weather_hourly")
 public class HourlyWeather {
@@ -77,4 +79,33 @@ public class HourlyWeather {
         return this;
     }
 
+
+    @Override
+    public String toString() {
+        return "HourlyWeather{" +
+                "id=" + id +
+                ", temperature=" + temperature +
+                ", precipitation=" + precipitation +
+                ", status='" + status + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HourlyWeather that = (HourlyWeather) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public HourlyWeather getShallowCopy(){
+        HourlyWeather copy=new HourlyWeather();
+        copy.setId(this.getId());
+        return copy;
+    }
 }

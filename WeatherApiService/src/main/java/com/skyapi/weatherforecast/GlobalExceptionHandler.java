@@ -1,8 +1,10 @@
 package com.skyapi.weatherforecast;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -30,6 +32,35 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorDTO.setPath(request.getServletPath());
         errorDTO.add(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        LOGGER.error(ex.getMessage(), ex);
+        return errorDTO;
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleBadRequestException(HttpServletRequest request, Exception ex){
+        ErrorDTO errorDTO=new ErrorDTO();
+        errorDTO.setTimestamp(new Date());
+        errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorDTO.setPath(request.getServletPath());
+
+        LOGGER.error(ex.getMessage(), ex);
+        return errorDTO;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleConstraintViolationException(HttpServletRequest request, Exception ex){
+        ConstraintViolationException constraintViolationException=(ConstraintViolationException) ex;
+        ErrorDTO errorDTO=new ErrorDTO();
+        errorDTO.setTimestamp(new Date());
+        errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorDTO.setPath(request.getServletPath());
+
+        var violationExceptions=constraintViolationException.getConstraintViolations();
+        violationExceptions.forEach(constraintViolation -> errorDTO.add(constraintViolation.getPropertyPath()+ ":"+constraintViolation.getMessage()));
         LOGGER.error(ex.getMessage(), ex);
         return errorDTO;
     }

@@ -46,7 +46,7 @@ public class Location {
 	@PrimaryKeyJoinColumn
 	private RealtimeWeather realtimeWeather;
 
-	@OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<HourlyWeather> listHourlyWeather=new ArrayList<>();
 
 	public Location(String cityName, String regionName, String countryName, String countryCode) {
@@ -146,5 +146,7 @@ public class Location {
 		this.setCode(code);
 		return this;
 	}
+
+
 }
 

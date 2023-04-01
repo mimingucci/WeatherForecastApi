@@ -1,5 +1,7 @@
 package com.skyapi.weatherforecast.hourly;
 
+import com.skyapi.weatherforecast.common.HourlyWeather;
+
 public class HourlyWeatherDTO {
     private int hourOfDay;
     private int temperature;
@@ -46,5 +48,25 @@ public class HourlyWeatherDTO {
     }
 
     public HourlyWeatherDTO() {
+    }
+
+    public HourlyWeatherDTO status(String status){
+        setStatus(status);
+        return this;
+    }
+
+    public HourlyWeatherDTO precipitation(int precipitation){
+        this.setPrecipitation(precipitation);
+        return this;
+    }
+
+    public HourlyWeatherDTO hourOfDay(int hour){
+        setHourOfDay(hour);
+        return this;
+    }
+
+    public HourlyWeatherDTO temperature(int temp){
+        setTemperature(temp);
+        return this;
     }
 }

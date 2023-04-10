@@ -166,5 +166,16 @@ public class LocationApiControllerTest {
 				.andDo(print());
 	}
 
+	@Test
+	public void testDeleteShouldReturn404() throws Exception {
+		String code="LACA_USA";
+		String requestURI=END_POINT_PATH+"/"+code;
+		LocationNotFoundException ex=new LocationNotFoundException(code);
+		Mockito.doThrow(ex).when(service).delete(code);
+		mockMvc.perform(delete(requestURI))
+				.andExpect(status().isNotFound());
+	}
+
+
 
 }

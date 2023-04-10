@@ -1,5 +1,6 @@
 package com.skyapi.weatherforecast;
 
+import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -32,6 +33,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorDTO.setPath(request.getServletPath());
         errorDTO.add(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        LOGGER.error(ex.getMessage(), ex);
+        return errorDTO;
+    }
+
+    @ExceptionHandler(LocationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDTO handleLocationNotFoundException(HttpServletRequest request, Exception ex){
+        ErrorDTO errorDTO=new ErrorDTO();
+        errorDTO.setTimestamp(new Date());
+        errorDTO.setStatus(HttpStatus.NOT_FOUND.value());
+        errorDTO.setPath(request.getServletPath());
+
         LOGGER.error(ex.getMessage(), ex);
         return errorDTO;
     }

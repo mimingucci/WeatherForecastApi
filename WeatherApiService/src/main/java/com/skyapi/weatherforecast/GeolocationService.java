@@ -8,16 +8,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class GeolocationService {
     private static final Logger LOGGER= LoggerFactory.getLogger(GeolocationService.class);
-    private final String DBPath="ip2locdb/IP2LOCATION-LITE-DB3.BIN";
+    private final String DBPath="/ip2locdb/IP2LOCATION-LITE-DB3.BIN";
     private IP2Location ip2Location=new IP2Location();
 
     public GeolocationService(){
         try {
-            ip2Location.Open(DBPath);
+            InputStream inputStream=getClass().getResourceAsStream(DBPath);
+            byte[] data=inputStream.readAllBytes();
+            ip2Location.Open(data);
+            inputStream.close();
         } catch (IOException e) {
             LOGGER.error("Could not initially ip2Location!!!");
         }

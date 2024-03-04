@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import com.skyapi.weatherforecast.common.DailyWeather;
 import com.skyapi.weatherforecast.common.HourlyWeather;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,22 @@ public class LocationRepositoryTest {
 		hourlyWeathers.add(forecast1);
 		Location updatedLocation=repo.save(location);
 		assertThat(updatedLocation.getListHourlyWeather()).isNotEmpty();
+	}
+	
+	@Test
+	public void testAddDailyWeather() {
+		Location location=repo.findById("MBMH_IN").get();
+		List<DailyWeather> lisDailyWeathers=location.getListDailyWeather();
+		DailyWeather dailyWeather=new DailyWeather().location(location)
+				                                    .dayOfMonth(10)
+				                                    .month(7)
+				                                    .minTemp(20)
+				                                    .maxTemp(32)
+				                                    .precipitation(20)
+				                                    .status("Sunny");
+		lisDailyWeathers.add(dailyWeather);
+		Location savedLocation=repo.save(location);
+		assertThat(savedLocation.getListDailyWeather()).isNotEmpty();
 	}
 
 }

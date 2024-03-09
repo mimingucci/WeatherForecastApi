@@ -53,12 +53,20 @@ public class RealtimeWeatherApiController {
     }
 
     @PutMapping("/{locationCode}")
-    public ResponseEntity<?> updateRealtimeWeather(@PathVariable("locationCode") String locationCode, @RequestBody @Valid RealtimeWeather realtimeWeather) throws LocationNotFoundException {
-        realtimeWeather.setLocationCode(locationCode);
+    public ResponseEntity<?> updateRealtimeWeather(@PathVariable("locationCode") String locationCode, @RequestBody @Valid RealtimeWeatherDTO dto) throws LocationNotFoundException {
+            RealtimeWeather realtimeWeather=dto2Entity(dto);
+    	    realtimeWeather.setLocationCode(locationCode);
 
             RealtimeWeather updatedRealtimeWeather=realtimeWeatherService.update(locationCode, realtimeWeather);
-            RealtimeWeatherDTO dto=mapper.map(updatedRealtimeWeather, RealtimeWeatherDTO.class);
-            return ResponseEntity.ok(dto);
+            return ResponseEntity.ok(entity2DTO(updatedRealtimeWeather));
 
+    }
+    
+    private RealtimeWeatherDTO entity2DTO (RealtimeWeather realtime) {
+    	return mapper.map(realtime, RealtimeWeatherDTO.class);
+    }
+    
+    private RealtimeWeather dto2Entity(RealtimeWeatherDTO dto) {
+    	return mapper.map(dto, RealtimeWeather.class);
     }
 }

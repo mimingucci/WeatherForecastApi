@@ -146,6 +146,5 @@ public class Location {
 		this.listDailyWeather = listDailyWeather;
 	}
 
-
 }
 

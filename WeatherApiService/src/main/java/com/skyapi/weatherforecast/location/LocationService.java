@@ -4,15 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.skyapi.weatherforecast.AbstractLocationService;
 import com.skyapi.weatherforecast.common.Location;
 
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class LocationService {
-
-	private LocationRepository repo;
+public class LocationService extends AbstractLocationService{
 
 	public LocationService(LocationRepository repo) {
 		super();
@@ -27,27 +26,13 @@ public class LocationService {
 		return repo.findUntrashed();
 	}
 	
-	public Location get(String code)  {
-
-
-		Location location= repo.findByCode(code);
-		if(location==null){
-			throw new LocationNotFoundException(code);
-		}
-		return location;
-	}
-	
 	public Location update(Location locationInRequest)  {
 		Location locationInDb=repo.findByCode(locationInRequest.getCode());
 		if(locationInDb==null) {
 			throw new LocationNotFoundException(locationInRequest.getCode());
 		}
 		
-		locationInDb.setCityName(locationInRequest.getCityName());
-		locationInDb.setCountryCode(locationInRequest.getCountryCode());
-		locationInDb.setCountryName(locationInRequest.getCountryName());
-		locationInDb.setRegionName(locationInRequest.getRegionName());
-		locationInDb.setEnabled(locationInRequest.isEnabled());
+		locationInDb.copyFieldsFrom(locationInRequest);
 		
 		return repo.save(locationInDb);
 	}

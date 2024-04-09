@@ -12,8 +12,9 @@ import java.util.Date;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.hateoas.RepresentationModel;
 
-public class RealtimeWeatherDTO {
+public class RealtimeWeatherDTO extends RepresentationModel<RealtimeWeatherDTO>{
 	@JsonInclude(value = Include.NON_NULL)
     private String location;
     @Range(min = -50, max = 50, message = "Temperature must be in the range of -50 and 50 celsius degree")

@@ -11,15 +11,18 @@ import com.skyapi.weatherforecast.common.Location;
 import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import com.skyapi.weatherforecast.location.LocationRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class DailyWeatherService {
 	private DailyWeatherRepository dailyWeatherRepository;
 	
 	private LocationRepository locationRepository;
 
-	public DailyWeatherService(DailyWeatherRepository dailyWeatherRepository, LocationRepository locationRepository) {
+	public DailyWeatherService(DailyWeatherRepository d, LocationRepository locationRepository) {
 		super();
-		this.dailyWeatherRepository = dailyWeatherRepository;
+		this.dailyWeatherRepository = d;
 		this.locationRepository = locationRepository;
 	}
 	

@@ -38,15 +38,15 @@ public class HourlyWeatherApiController {
     @GetMapping
     public ResponseEntity<?> listHourlyForecaseByIPAddress(HttpServletRequest request){
         String ipLocation= CommonUtility.getIPAddress(request);
-        int currentHour=Integer.parseInt(request.getHeader("X-Current-Hour"));
         try {
+        	int currentHour=Integer.parseInt(request.getHeader("X-Current-Hour"));
             Location locationByIP=geolocationService.getLocation(ipLocation);
             List<HourlyWeather> hourlyForecast=hourlyWeatherService.getByLocation(locationByIP, currentHour);
             if(hourlyForecast.isEmpty()){
                 return ResponseEntity.noContent().build();
             }
-            return ResponseEntity.ok(hourlyForecast);
-        } catch (GeolocationException e) {
+            return ResponseEntity.ok(listEntity2DTO(hourlyForecast));
+        } catch (NumberFormatException | GeolocationException e) {
             return ResponseEntity.badRequest().build();
         } catch (LocationNotFoundException e) {
             return ResponseEntity.notFound().build();

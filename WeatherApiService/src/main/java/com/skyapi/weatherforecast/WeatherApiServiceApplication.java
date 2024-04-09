@@ -6,7 +6,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.skyapi.weatherforecast.common.DailyWeather;
 import com.skyapi.weatherforecast.common.HourlyWeather;
 import com.skyapi.weatherforecast.common.Location;
@@ -54,6 +58,14 @@ public class WeatherApiServiceApplication {
 		   .addMapping(src->src.getId().getHourOfDay(), HourlyWeatherDTO::setHourOfDay);
 		mapper.typeMap(HourlyWeatherDTO.class, HourlyWeather.class)
 		   .addMapping(src->src.getHourOfDay(), (desc, value)->desc.getId().setHourOfDay(value!=null ? (int)value : 0));
+	}
+	
+	@Bean
+	public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper=new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+		return objectMapper;
 	}
 
 	public static void main(String[] args) {

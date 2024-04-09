@@ -13,7 +13,10 @@ import com.skyapi.weatherforecast.common.RealtimeWeather;
 import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import com.skyapi.weatherforecast.location.LocationRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class FullWeatherService extends AbstractLocationService{
 
 

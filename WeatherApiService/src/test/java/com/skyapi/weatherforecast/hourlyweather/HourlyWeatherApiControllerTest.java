@@ -1,5 +1,6 @@
 package com.skyapi.weatherforecast.hourlyweather;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skyapi.weatherforecast.GeolocationException;
 import com.skyapi.weatherforecast.GeolocationService;
 import com.skyapi.weatherforecast.common.HourlyWeather;
@@ -34,6 +35,9 @@ public class HourlyWeatherApiControllerTest {
     public static final String END_POINT_PATH="/v1/hourly";
     @Autowired
     public MockMvc mockMvc;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
     
     @MockBean
     private HourlyWeatherService hourlyWeatherService;

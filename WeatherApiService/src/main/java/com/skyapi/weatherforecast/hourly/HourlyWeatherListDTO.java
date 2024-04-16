@@ -5,7 +5,9 @@ import com.skyapi.weatherforecast.common.Location;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HourlyWeatherListDTO {
+import org.springframework.hateoas.RepresentationModel;
+
+public class HourlyWeatherListDTO extends RepresentationModel<HourlyWeatherListDTO>{
     private String location;
     private List<HourlyWeatherDTO> hourlyForecast=new ArrayList<>();
 

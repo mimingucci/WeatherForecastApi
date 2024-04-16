@@ -1,6 +1,8 @@
 package com.skyapi.weatherforecast.full;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,13 +27,15 @@ public class FullWeatherApiController {
 	private GeolocationService locationService;
 	private FullWeatherService weatherService;
 	private ModelMapper mapper;
-	
+	private FullWeatherModelAssembler modelAssembler;
+
 	public FullWeatherApiController(GeolocationService locationService, FullWeatherService weatherService,
-			ModelMapper mapper) {
+			ModelMapper mapper, FullWeatherModelAssembler modelAssembler) {
 		super();
 		this.locationService = locationService;
 		this.weatherService = weatherService;
 		this.mapper = mapper;
+		this.modelAssembler = modelAssembler;
 	}
 
 	@GetMapping
@@ -39,7 +43,7 @@ public class FullWeatherApiController {
 		String ipAddress=CommonUtility.getIPAddress(request);
 		Location locationFromIP=locationService.getLocation(ipAddress);
 		Location locationFromDB=weatherService.getByLocation(locationFromIP);
-		return ResponseEntity.ok(entity2DTO(locationFromDB));
+		return ResponseEntity.ok(modelAssembler.toModel(entity2DTO(locationFromDB)));
 	}
 
 
@@ -70,5 +74,10 @@ public class FullWeatherApiController {
 		Location locationInRequest=dto2Entity(dto);
 		Location updatedLocation=weatherService.update(locationCode, locationInRequest);
 		return ResponseEntity.ok(entity2DTO(updatedLocation));
+	}
+	
+	private EntityModel<FullWeatherDTO> addLinksByLocation(FullWeatherDTO dto, String locationCode){
+		return EntityModel.of(dto)
+				          .add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(FullWeatherApiController.class).getFullWeatherByLocationCode(locationCode)).withSelfRel());
 	}
 }

@@ -44,7 +44,7 @@ public class MainController {
 		String dailyForecastByIpUrl=WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(DailyWeatherApiController.class).listDailyForecastByIPAddress(null)).toString();				
 		entity.setDailyForecastByIpUrl(dailyForecastByIpUrl);
 		
-		String dailyForecastByCodeUrl=WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(DailyWeatherApiController.class).listHourlyForecastByLocationCode(null)).toString();				
+		String dailyForecastByCodeUrl=WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(DailyWeatherApiController.class).listDailyForecastByLocationCode(null)).toString();				
 		entity.setDailyForecastByCodeUrl(dailyForecastByCodeUrl);
 		
 		String fullWeatherByIpUrl=WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(FullWeatherApiController.class).getFullWeatherByIPAddress(null)).toString();				

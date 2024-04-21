@@ -45,12 +45,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDTO.setTimestamp(new Date());
         errorDTO.setStatus(HttpStatus.NOT_FOUND.value());
         errorDTO.setPath(request.getServletPath());
+        errorDTO.addError(ex.getMessage());
 
         LOGGER.error(ex.getMessage(), ex);
         return errorDTO;
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler({BadRequestException.class, GeolocationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorDTO handleBadRequestException(HttpServletRequest request, Exception ex){
@@ -58,6 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDTO.setTimestamp(new Date());
         errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
         errorDTO.setPath(request.getServletPath());
+        errorDTO.addError(ex.getMessage());
 
         LOGGER.error(ex.getMessage(), ex);
         return errorDTO;
@@ -72,9 +74,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDTO.setTimestamp(new Date());
         errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
         errorDTO.setPath(request.getServletPath());
+        errorDTO.addError(ex.getMessage());
 
         var violationExceptions=constraintViolationException.getConstraintViolations();
-        violationExceptions.forEach(constraintViolation -> errorDTO.add(constraintViolation.getPropertyPath()+ ":"+constraintViolation.getMessage()));
+        violationExceptions.forEach(constraintViolation -> errorDTO.addError(constraintViolation.getPropertyPath()+ ":"+constraintViolation.getMessage()));
         LOGGER.error(ex.getMessage(), ex);
         return errorDTO;
     }
@@ -86,7 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
         errorDTO.setPath(((ServletWebRequest) request).getRequest().getServletPath());
         ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
-            errorDTO.add(fieldError.getDefaultMessage());
+            errorDTO.addError(fieldError.getDefaultMessage());
         });
         return new ResponseEntity<>(errorDTO, headers, status);
     }

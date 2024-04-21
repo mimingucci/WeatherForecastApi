@@ -46,4 +46,7 @@ public class ErrorDTO {
         this.errors.add(e);
     }
 
+    public void addError(String message) {
+		this.errors.add(message);
+	}
 }

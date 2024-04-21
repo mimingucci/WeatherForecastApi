@@ -12,6 +12,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.test.annotation.Rollback;
 
@@ -109,5 +113,34 @@ public class LocationRepositoryTest {
 		Location savedLocation=repo.save(location);
 		assertThat(savedLocation.getListDailyWeather()).isNotEmpty();
 	}
+	
+	@Test
+	public void testListFirstPage() {
+		int pageSize = 5;
+		int pageNum = 0;
+		Pageable pageable = PageRequest.of(pageNum, pageSize);
+		Page<Location> page = repo.findUntrashed(pageable);
+		page.forEach(System.out::println);
+		assertThat(page).size().isEqualTo(2);
+	}
 
+	@Test
+	public void testListPageNoContent() {
+		int pageSize = 5;
+		int pageNum = 10;
+		Pageable pageable = PageRequest.of(pageNum, pageSize);
+		Page<Location> page = repo.findUntrashed(pageable);
+		assertThat(page).isEmpty();;
+	}
+	
+	@Test
+	public void testListPageWithSort() {
+		int pageSize = 5;
+		int pageNum = 0;
+		Sort sort = Sort.by("cityName").descending();
+		Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+		Page<Location> page = repo.findUntrashed(pageable);
+		page.forEach(System.out::println);
+		assertThat(page).size().isEqualTo(2);
+	}
 }

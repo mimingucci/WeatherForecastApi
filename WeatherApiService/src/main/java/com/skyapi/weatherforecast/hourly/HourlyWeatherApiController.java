@@ -10,7 +10,14 @@ import com.skyapi.weatherforecast.daily.DailyWeatherApiController;
 import com.skyapi.weatherforecast.full.FullWeatherApiController;
 import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import com.skyapi.weatherforecast.realtime.RealtimeWeatherApiController;
+import com.skyapi.weatherforecast.realtime.RealtimeWeatherDTO;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -24,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Tag(name = "Hourly Forecast", description = "APIs for accessing and updating hourly weather forecast")
 @RestController
 @RequestMapping("/v1/hourly")
 @Validated
@@ -40,6 +48,15 @@ public class HourlyWeatherApiController {
         this.mapper=mapper;
     }
 
+    @Operation(summary = "Returns weather forecast for upcoming hours in the current day, based on client's IP address", description = "Clients use this API to get weather forecast for upcoming hours in the current day. Location is determined automatically based on client's IP address.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful retrieval operation. A JSON object representing hourly forecast information available for the client's location - only data for the next hours is returned (based on value of the header X-Current-Hour). The response contains links which clients can use to get realtime, daily and full weather information.", content = {
+            @Content(schema = @Schema(implementation = HourlyWeatherListDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "204", description = "No hourly forecast data available", content = {
+            @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "404", description = "No managed location found for the client's IP address", content = {
+                @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "400", description = "Error during geolocation process or invalid value of request header X-Current-Hour", content = { @Content(schema = @Schema()) }) })
     @GetMapping
     public ResponseEntity<?> listHourlyForecaseByIPAddress(HttpServletRequest request){
         String ipLocation= CommonUtility.getIPAddress(request);
@@ -58,6 +75,15 @@ public class HourlyWeatherApiController {
         }
     }
 
+    @Operation(summary = "Returns hourly weather forecast information based on location code.", description = "Clients use this API to get weather forecast for upcomping hours in the current day, for the given location code. Only data for the next hours is returned (based on value of the header X-Current-Hour).")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful retrieval operation. A JSON object representing hourly forecast data available for the given location code. The response contains links which clients can use to get realtime, daily and full weather information.", content = {
+            @Content(schema = @Schema(implementation = HourlyWeatherListDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "204", description = "No hourly forecast data available", content = {
+            @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "404", description = "No managed location found for the given location code", content = {
+                @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "400", description = "Invalid value of request header X-Current-Hour", content = { @Content(schema = @Schema()) }) })
     @GetMapping("/{locationCode}")
     public ResponseEntity<?> listHourlyForecastByLocationCode(@PathVariable("locationCode") String locationCode, HttpServletRequest request){
         try {
@@ -85,6 +111,14 @@ public class HourlyWeatherApiController {
         return listDto;
     }
 
+    @Operation(summary = "Updates hourly weather forecast information for a specific location", description = "Clients use this API to update weather forecast for upcoming hours in the current day, for the given location code. Successful update operation will replace all existing data.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful update operation. Hourly weather forecast data updated successfully - all previous data is replaced. The response contains links which clients can use to get realtime, daily and full weather information.", content = {
+            @Content(schema = @Schema(implementation = HourlyWeatherListDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "404", description = "no managed location found for the given code", content = {
+                @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "400", description = "bad request. Request body contains empty array (no data) or there are some invalid values of fields in hourly forecast information.", content = { @Content(schema = @Schema()) }) })
+    
     @PutMapping("/{locationCode}")
     public ResponseEntity<?> updateHourlyForecast(@PathVariable("locationCode") String locationCode, @RequestBody @Valid List<HourlyWeatherDTO> listDTO) throws BadRequestException {
         if(listDTO.isEmpty()){

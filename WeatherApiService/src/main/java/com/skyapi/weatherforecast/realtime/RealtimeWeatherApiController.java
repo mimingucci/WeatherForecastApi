@@ -9,6 +9,11 @@ import com.skyapi.weatherforecast.daily.DailyWeatherApiController;
 import com.skyapi.weatherforecast.full.FullWeatherApiController;
 import com.skyapi.weatherforecast.hourly.HourlyWeatherApiController;
 import com.skyapi.weatherforecast.location.LocationNotFoundException;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -17,7 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Tag(name = "Realtime Weather", description = "APIs for accessing and updating realtime weather data")
 @RestController
 @RequestMapping( path = "/v1/realtime", produces = "application/json")
 public class RealtimeWeatherApiController {
@@ -33,6 +41,13 @@ public class RealtimeWeatherApiController {
         this.mapper = mapper;
     }
 
+    @Operation(summary = "Get Realtime Weather By Ip Address", description = "Returns the current weather information of the location based on client's IP address")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful retrieval operation. Realtime data available for the client's location. The response contains links which clients can use to get hourly, daily and full weather forecast of the same location.", content = {
+            @Content(schema = @Schema(implementation = RealtimeWeatherDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "400", description = "bad request. Could not determine client's IP address", content = {
+            @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "404", description = "No managed location found for the client's IP address", content = { @Content(schema = @Schema()) }) })
     @GetMapping
     public ResponseEntity<?> getRealtimeWeatherByIPAddress(HttpServletRequest request){
         try {
@@ -47,6 +62,11 @@ public class RealtimeWeatherApiController {
         }
     }
 
+    @Operation(summary = "Returns the current weather information of a specific location identified by the given code", description = "Clients use this API to get realtime weather data of a specific location by the given code")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful retrieval operation. Realtime data available for the given location. The response contains links which clients can use to get hourly, daily and full weather forecast of the same location.", content = {
+            @Content(schema = @Schema(implementation = RealtimeWeatherDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "404", description = "No managed location found for the given code", content = { @Content(schema = @Schema()) }) })
     @GetMapping("/{locationCode}")
     public ResponseEntity<?> getRealtimeWeatherByLocationCode(@PathVariable(name = "locationCode") String locationCode) throws GeolocationException{
 
@@ -56,6 +76,11 @@ public class RealtimeWeatherApiController {
 
     }
 
+    @Operation(summary = "Updates realtime weather data based on location code", description = "Clients use this API to update current weather information for a specific location")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful update operation. Realtime weather data updated successfully. The response contains links which clients can use to get hourly, daily and full weather forecast of the same location.", content = {
+            @Content(schema = @Schema(implementation = RealtimeWeatherDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "404", description = "No managed location found for the given code", content = { @Content(schema = @Schema()) }) })
     @PutMapping("/{locationCode}")
     public ResponseEntity<?> updateRealtimeWeather(@PathVariable("locationCode") String locationCode, @RequestBody @Valid RealtimeWeatherDTO dto) throws LocationNotFoundException, GeolocationException {
             RealtimeWeather realtimeWeather=dto2Entity(dto);

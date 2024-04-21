@@ -37,10 +37,17 @@ import com.skyapi.weatherforecast.full.FullWeatherApiController;
 import com.skyapi.weatherforecast.hourly.HourlyWeatherApiController;
 import com.skyapi.weatherforecast.realtime.RealtimeWeatherApiController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
+@Tag(name = "Location", description = "APIs for location management (cities and regions in the world). Used for administrative purposes.")
 @RestController
 @RequestMapping("/v1/locations")
 @Validated
@@ -65,6 +72,12 @@ public class LocationApiController {
 		this.mapper=mapper;
 	}
 	
+	@Operation(summary = "Adds a new location to be managed for weather forecast", description = "Clients use this API to put a new location into the system. Location code must be manually specified. Country code and country name based on ISO 3166")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Successful add operation. Location added. Returns details of the newly added location. The response contains links which clients can use to get realtime, hourly, daily and full weather forecast of the location.", content = {
+            @Content(schema = @Schema(implementation = LocationDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "400", description = "Failed add operation. Request body rejected due to some fields have invalid values", content = {
+            @Content(schema = @Schema()) }) })
     @PostMapping
     public ResponseEntity<LocationDTO> addLocation(@RequestBody @Valid LocationDTO dto) throws GeolocationException{
     	Location addedLocation=service.save(dto2Entity(dto));
@@ -86,6 +99,16 @@ public class LocationApiController {
     	return ResponseEntity.ok(listEntity2ListDTO(locations));
     }
     
+    @Operation(summary = "Returns a list of managed locations - available for weather forecast", description = "Clients use this API to get a list of managed locations. Each location is uniquely identified by location code, for example 'LACA_US' represents Los Angeles city in California state, in the United States of America (US)")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "successful operation. There are managed locations available.\r\n"
+        		+ "The response contains locations listed in the specified page number, or in the first page if no page parameter specified.\r\n"
+        		+ "The pagination details are described in the object named 'page'.\r\n"
+        		+ "The '_links' object contains links which clients can use to retrieve data in the first, next, previous or last page.", content = {
+            @Content(schema = @Schema(implementation = LocationDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "204", description = "	\r\n"
+        		+ "No managed locations available", content = {
+            @Content(schema = @Schema()) }) })
     @GetMapping
     public ResponseEntity<?> listLocations(@RequestParam(value = "page", required = false, defaultValue = "1") @Min(value = 1)Integer pageNum, 
     		@RequestParam(value = "size", required = false, defaultValue = "5") @Min(value = 5) @Max(value = 20) Integer pageSize, 
@@ -166,12 +189,26 @@ public class LocationApiController {
 		
 	}
     
+    @Operation(summary = "Returns details of a location", description = "Clients use this API to find an existing location in the database by a specific code")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Successful retrieval operation. Location found. The response contains links which clients can use to get realtime, hourly, daily and full weather forecast of the location.", content = {
+            @Content(schema = @Schema(implementation = LocationDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "404", description = "No location found with the given code.", content = {
+            @Content(schema = @Schema()) }) })
     @GetMapping("/{code}")
     public ResponseEntity<?> getLocation(@PathVariable("code") String code) throws GeolocationException{
     	Location location=service.get(code);
     	return ResponseEntity.ok(addLinks2Item(entity2DTO(location)));
     }
     
+    @Operation(summary = "Updates an existing location", description = "Clients use this API to modify information of a specific location. Note that location code cannot be changed.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Successful update operation. Location updated. Returns details of the recently updated location. The response contains links which clients can use to get realtime, hourly, daily and full weather forecast of the location.", content = {
+            @Content(schema = @Schema(implementation = LocationDTO.class), mediaType = "application/json") }),
+        @ApiResponse(responseCode = "400", description = "Failed update operation. Request body rejected due to some fields have invalid values", content = {
+            @Content(schema = @Schema()) }),
+    @ApiResponse(responseCode = "404", description = "No location found with the given code.", content = {
+            @Content(schema = @Schema()) }) })
     @PutMapping
     public ResponseEntity<?> updateLocation(@RequestBody @Valid Location location) throws GeolocationException{
 
@@ -180,6 +217,12 @@ public class LocationApiController {
 
     }
     
+    @Operation(summary = "Removes an existing location found by a specific code", description = "Clients use this API to delete a specific location from database")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Successful delete operation. Location removed.", content = {
+            @Content(schema = @Schema()) }),
+        @ApiResponse(responseCode = "404", description = "No location found with the given code.", content = {
+            @Content(schema = @Schema()) }) })
     @DeleteMapping("/{code}")
     public ResponseEntity<?> deleteLocation(@PathVariable("code") String code){
 			service.delete(code);

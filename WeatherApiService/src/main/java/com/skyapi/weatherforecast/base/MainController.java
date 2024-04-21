@@ -12,9 +12,15 @@ import com.skyapi.weatherforecast.hourly.HourlyWeatherApiController;
 import com.skyapi.weatherforecast.location.LocationApiController;
 import com.skyapi.weatherforecast.realtime.RealtimeWeatherApiController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
+@Tag(name = "Weather Apis", description = "Root Directory")
 @RestController
 public class MainController {
 
+	@Operation(summary = "Base URI", tags = "get")
 	@GetMapping("/")
 	public ResponseEntity<RootEntity> handleBaseURI() throws GeolocationException{
 		return ResponseEntity.ok(createRootEntity());

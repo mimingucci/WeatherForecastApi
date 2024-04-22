@@ -1,0 +1,2 @@
+Link demo: https://weatherapis-8bdfe421d2e9.herokuapp.com/ <br/>
+Link demo swagger: https://weatherapis-8bdfe421d2e9.herokuapp.com/swagger-ui/index.html#/ [But it seems error for CORS requests, so you can use Postman instead]

@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,10 +123,34 @@ public class LocationApiController {
     	Map<String, Object> filterFields = getFilterFields(enabled, regionName, countryCode);
     	Page<Location> page = service.listByPage(pageNum - 1, pageSize, sortField, filterFields);
     	List<Location> locations = page.getContent();
-    	if (locations.isEmpty()) {
+    	List<Location> filter_locations = new ArrayList<>();
+    	for (var i : locations) {
+    		boolean got = true;
+    		if (!"".equals(enabled)) {
+    			if (Boolean.parseBoolean(enabled) != i.isEnabled()) {
+    				got = false;
+    			}
+    		}
+    		
+    		if (!"".equals(regionName)) {
+    			if (!regionName.equals(i.getRegionName())) {
+    				got = false;
+    			}
+    		}		
+    		
+    		if (!"".equals(countryCode)) {
+    			if (!countryCode.equals(i.getCountryCode())) {
+    				got = false;
+    			}
+    		}
+    		if (got) {
+    			filter_locations.add(i);
+    		}
+    	}
+    	if (filter_locations.isEmpty()) {
     		return ResponseEntity.noContent().build();
     	}
-    	return ResponseEntity.ok(addPageMetadataAndLinks2Collection(listEntity2ListDTO(locations), page, sortField, enabled, regionName, countryCode));
+    	return ResponseEntity.ok(addPageMetadataAndLinks2Collection(listEntity2ListDTO(filter_locations), page, sortField, enabled, regionName, countryCode));
     }
     
     private CollectionModel<LocationDTO> addPageMetadataAndLinks2Collection(

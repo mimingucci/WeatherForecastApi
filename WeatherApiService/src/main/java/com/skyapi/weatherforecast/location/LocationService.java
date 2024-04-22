@@ -39,12 +39,15 @@ public class LocationService extends AbstractLocationService{
 		return repo.findUntrashed(pageable);
 	}
 	
-	public Page<Location> listByPage(int pageNum, int pageSize, String sortOption, Map<String, Object> filterFields) {
-		Sort sort = createMultipleSorts(sortOption);
-		
+	public Page<Location> listByPage(int pageNum, int pageSize, String sortField, Map<String, Object> filterFields) {
+//		Sort sort = createMultipleSorts(sortField);
+//		
+//		Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+//		
+//		return repo.listWithFilter(pageable, filterFields);
+		Sort sort = Sort.by(sortField).ascending();
 		Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-		
-		return repo.listWithFilter(pageable, filterFields);
+		return repo.findUntrashed(pageable);
 	}
 	
 	private Sort createMultipleSorts(String sortOption) {
